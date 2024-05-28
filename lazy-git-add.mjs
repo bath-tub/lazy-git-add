@@ -4,18 +4,22 @@ import { execSync } from 'child_process';
 
 function getGitStatus() {
   const statusOutput = execSync('git status --porcelain').toString();
-  console.log('Raw git status output:', statusOutput);
   return statusOutput.split('\n').filter(Boolean);
 }
 
+function getStagedFiles() {
+  const stagedOutput = execSync('git diff --cached --name-only').toString();
+  return stagedOutput.split('\n').filter(Boolean);
+}
+
 function printGitStatus() {
-  console.log('\nCurrent Git Status:');
   const status = execSync('git status').toString();
-  console.log(status);
 }
 
 async function run() {
   const statusLines = getGitStatus();
+  const stagedFiles = getStagedFiles();
+
   const choices = statusLines.map(line => {
     const status = line.substring(0, 2).trim();
     const filename = line.substring(3).trim();
@@ -24,11 +28,10 @@ async function run() {
       name: label,
       value: filename,
       short: filename,
-      checked: false // set to default, bugs occuring when set otherwise on startup
+      checked: stagedFiles.includes(filename) // Check if the file is already staged
     };
   });
 
-  console.log('Choices for staging:', choices);
 
   const answers = await inquirer.prompt([
     {
@@ -40,18 +43,28 @@ async function run() {
     }
   ]);
 
-  if (answers.filesToStage.length) {
-    console.log('Files selected for staging:', answers.filesToStage);
+  const selectedFiles = answers.filesToStage;
+
+  if (selectedFiles.length) {
+    // Stage the selected files
     try {
-      const addCommand = `git add ${answers.filesToStage.join(' ')}`;
-      console.log('Executing command:', addCommand);
+      const addCommand = `git add ${selectedFiles.join(' ')}`;
       execSync(addCommand);
-      console.log('Selected files have been staged.');
     } catch (error) {
       console.error('Error staging files:', error);
     }
   } else {
-    console.log('No files were selected.');
+  }
+
+  // Reset (unstage) files that were not selected
+  const filesToUnstage = stagedFiles.filter(file => !selectedFiles.includes(file));
+  if (filesToUnstage.length) {
+    try {
+      const resetCommand = `git reset ${filesToUnstage.join(' ')}`;
+      execSync(resetCommand);
+    } catch (error) {
+      console.error('Error unstaging files:', error);
+    }
   }
 
   // Display the current git status after staging files.
