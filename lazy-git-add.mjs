@@ -2,26 +2,29 @@
 import inquirer from 'inquirer';
 import { execSync } from 'child_process';
 
+// Function to get the current git status in a concise format
 function getGitStatus() {
   try {
     const statusOutput = execSync('git status --porcelain').toString();
-    return statusOutput.split('\n').filter(Boolean);
+    return statusOutput.split('\n').filter(Boolean); // Split by newlines and filter out empty lines
   } catch (error) {
     console.error('Error getting git status:', error);
     process.exit(1);
   }
 }
 
+// Function to get the list of currently staged files
 function getStagedFiles() {
   try {
     const stagedOutput = execSync('git diff --cached --name-only').toString();
-    return stagedOutput.split('\n').filter(Boolean);
+    return stagedOutput.split('\n').filter(Boolean); // Split by newlines and filter out empty lines
   } catch (error) {
     console.error('Error getting staged files:', error);
     process.exit(1);
   }
 }
 
+// Function to print the current git status in a readable format
 function printGitStatus() {
   try {
     console.log('\nCurrent Git Status:');
@@ -33,34 +36,37 @@ function printGitStatus() {
   }
 }
 
+// Main function to run the interactive prompt and handle staging/unstaging
 async function run() {
   try {
-    const statusLines = getGitStatus();
-    const stagedFiles = getStagedFiles();
+    const statusLines = getGitStatus(); // Get the list of files with their status
+    const stagedFiles = getStagedFiles(); // Get the list of currently staged files
 
+    // Prepare choices for the inquirer prompt
     const choices = statusLines.map(line => {
-      const status = line.substring(0, 2).trim();
-      const filename = line.substring(3).trim();
+      const status = line.substring(0, 2).trim(); // Extract the status code
+      const filename = line.substring(3).trim(); // Extract the filename
       const label = `${status === '??' ? 'Untracked' : 'Modified'}: ${filename}`;
       return {
-        name: label,
-        value: filename,
-        short: filename,
+        name: label, // Display label for the prompt
+        value: filename, // Value to return when selected
+        short: filename, // Short name to display in the prompt
         checked: stagedFiles.includes(filename) // Check if the file is already staged
       };
     });
 
+    // Prompt the user to select files to stage
     const answers = await inquirer.prompt([
       {
         type: 'checkbox',
         message: 'Select files to stage (press Control + C to exit):',
         name: 'filesToStage',
         choices,
-        pageSize: 15  // Adjust this number based on your preference
+        pageSize: 15  // Adjust the number of choices displayed at once
       }
     ]);
 
-    const selectedFiles = answers.filesToStage;
+    const selectedFiles = answers.filesToStage; // Get the list of files selected for staging
 
     if (selectedFiles.length) {
       // Stage the selected files
@@ -75,7 +81,7 @@ async function run() {
       console.log('No files were selected.');
     }
 
-    // Reset (unstage) files that were not selected
+    // Unstage files that were not selected
     const filesToUnstage = stagedFiles.filter(file => !selectedFiles.includes(file));
     if (filesToUnstage.length) {
       try {
@@ -87,7 +93,7 @@ async function run() {
       }
     }
 
-    // Display the current git status after staging files.
+    // Display the current git status after staging/unstaging files
     printGitStatus();
   } catch (error) {
     console.error('Error running script:', error);
