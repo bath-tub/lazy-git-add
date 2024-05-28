@@ -21,6 +21,7 @@ Simplifiy the process of staging files in a Git repository. Utilizing a checkbox
 2. install dependencies
 ```
 npm install
+```
 3. Make the script executable
 ```
 chmod +x path/to/lazy-git-add.sh
