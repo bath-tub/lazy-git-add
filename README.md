@@ -18,18 +18,9 @@ Simplifiy the process of staging files in a Git repository. Utilizing a checkbox
 ## Installation
   
 1. Clone the repo
-2. install dependencies
-```
-npm install
-```
-3. Make the script executable
-```
-chmod +x path/to/lazy-git-add.sh
-```
-3. Add the alias to your `.bashrc` or `.zshrc` file
-```
-alias  lga="path/to/lazy-git-add.sh"
-```
+2. install dependencies `npm install`
+3. Make the script executable `chmod +x path/to/lazy-git-add.sh`
+3. Add the alias to your `.bashrc` or `.zshrc` file `alias  lga="path/to/lazy-git-add.sh"`
   
 ## Usage
 Navigate to a repo and run the alias `lga` in the terminal. The script will display a list of files in the repository, with checkboxes next to each file. Use the arrow keys to navigate the list and the spacebar to select files for staging. Press enter to stage the selected files. The script will then display the current Git status, showing which files have been staged.

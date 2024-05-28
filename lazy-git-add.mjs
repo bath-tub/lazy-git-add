@@ -3,7 +3,9 @@ import inquirer from 'inquirer';
 import { execSync } from 'child_process';
 
 function getGitStatus() {
-  return execSync('git status --porcelain').toString().split('\n').filter(Boolean);
+  const statusOutput = execSync('git status --porcelain').toString();
+  console.log('Raw git status output:', statusOutput);
+  return statusOutput.split('\n').filter(Boolean);
 }
 
 function printGitStatus() {
@@ -22,9 +24,11 @@ async function run() {
       name: label,
       value: filename,
       short: filename,
-      checked: status !== '??'
+      checked: false // set to default, bugs occuring when set otherwise on startup
     };
   });
+
+  console.log('Choices for staging:', choices);
 
   const answers = await inquirer.prompt([
     {
@@ -37,8 +41,15 @@ async function run() {
   ]);
 
   if (answers.filesToStage.length) {
-    execSync(`git add ${answers.filesToStage.join(' ')}`);
-    console.log('Selected files have been staged.');
+    console.log('Files selected for staging:', answers.filesToStage);
+    try {
+      const addCommand = `git add ${answers.filesToStage.join(' ')}`;
+      console.log('Executing command:', addCommand);
+      execSync(addCommand);
+      console.log('Selected files have been staged.');
+    } catch (error) {
+      console.error('Error staging files:', error);
+    }
   } else {
     console.log('No files were selected.');
   }
