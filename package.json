@@ -1,0 +1,16 @@
+{
+    "name": "lazy-git-add",
+    "version": "1.0.0",
+    "description": "An interactive tool for staging files in Git repositories.",
+    "main": "lazyGitAdd.mjs",
+    "type": "module",
+    "scripts": {
+      "start": "node lazy-git-add.mjs"
+    },
+    "dependencies": {
+      "inquirer": "^8.2.0"
+    },
+    "author": "Miller Bath",
+    "license": "MIT"
+  }
+  
