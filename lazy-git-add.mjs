@@ -22,7 +22,7 @@ async function run() {
       name: label,
       value: filename,
       short: filename,
-      checked: false // ensure no files are selected by default
+      checked: status !== '??'
     };
   });
 

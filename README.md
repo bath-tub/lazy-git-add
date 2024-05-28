@@ -19,14 +19,14 @@ Simplifiy the process of staging files in a Git repository. Utilizing a checkbox
   
 1. Clone the repo
 2. install dependencies
-```sh
+```
 npm install
 3. Make the script executable
-```sh
+```
 chmod +x path/to/lazy-git-add.sh
 ```
 3. Add the alias to your `.bashrc` or `.zshrc` file
-```sh
+```
 alias  lga="path/to/lazy-git-add.sh"
 ```
   
