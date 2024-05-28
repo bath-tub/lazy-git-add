@@ -22,14 +22,14 @@ async function run() {
       name: label,
       value: filename,
       short: filename,
-      checked: status !== '??'
+      checked: false // ensure no files are selected by default
     };
   });
 
   const answers = await inquirer.prompt([
     {
       type: 'checkbox',
-      message: 'Select files to stage:',
+      message: 'Select files to stage (press Control + C to exit):',
       name: 'filesToStage',
       choices,
       pageSize: 15  // Adjust this number based on your preference
